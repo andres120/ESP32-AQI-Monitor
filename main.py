@@ -15,12 +15,14 @@ sw = machine.Pin(36, machine.Pin.IN)
 #adc = machine.ADC(machine.Pin(34))
 
 display_status = 1
+ssid = 'ssid'
+ap_ps = 'pk'
 oled = ssd1306.SSD1306_SPI(128, 64, spi, dc, res, cs, external_vcc=False)
 
 utime.sleep(3)
 sta_if = network.WLAN(network.STA_IF)
 sta_if.active(1)
-sta_if.connect('Xiaomi_120', '1qaz2wsx3edc4rfv')
+sta_if.connect(ssid, ap_ps)
 
 while not sta_if.isconnected():
  oled.fill(0)
@@ -71,7 +73,7 @@ while True:
   oled.text("Connecing...",0,16)
   oled.show()
   try:
-   sta_if.connect('Xiaomi_120', '1qaz2wsx3edc4rfv')
+   sta_if.connect(ssid, ap_ps)
   except:
    oled.fill(0)
    oled.text("WiFi Error!",0,32)
@@ -119,6 +121,15 @@ while True:
     oled.text(w,0,y)
     y += 8
     oled.show()
+   sta_if.active(0)
+   time.sleep(10)
+   sta_if.active(1)
+   sta_if.connect(ssid, ap_ps)
+   while not sta_if.isconnected():
+    oled.text("Connecting...",0,56)
+    oled.show()
+    time.sleep(1)
+    
    client.connect()
    client.publish(b'filter_error', str(errrr))
    client.disconnect()
